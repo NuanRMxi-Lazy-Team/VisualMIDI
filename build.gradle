@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'cn.moerain'
+version = '1.0-BETA'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+application {
+    mainClass = 'cn.moerain.visualmidi.Main'
+    // Ensure JVM internal package access for SF2 soundbank on Java 17+
+    applicationDefaultJvmArgs = ['--add-exports=java.desktop/com.sun.media.sound=ALL-UNNAMED']
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+run {
+    // Allow access to internal com.sun.media.sound for SF2 loading in some JDKs
+    jvmArgs += ['--add-exports=java.desktop/com.sun.media.sound=ALL-UNNAMED']
+}
+
+test {
+    useJUnitPlatform()
+}
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'cn.moerain.visualmidi.Main'
+        )
+    }
+}
