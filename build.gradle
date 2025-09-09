@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'maven-publish'
 }
 
 group = 'cn.moerain'
@@ -10,12 +11,15 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
+    tasks.withType(ProcessResources) {
+        filteringCharset = 'UTF-8'
+    }
 }
 
 application {
     mainClass = 'cn.moerain.visualmidi.Main'
     // Ensure JVM internal package access for SF2 soundbank on Java 17+
-    applicationDefaultJvmArgs = ['--add-exports=java.desktop/com.sun.media.sound=ALL-UNNAMED']
+    applicationDefaultJvmArgs = ['--add-exports=java.desktop/com.sun.media.sound=ALL-UNNAMED', '-Dfile.encoding=UTF-8']
 }
 
 repositories {
@@ -30,7 +34,7 @@ dependencies {
 
 run {
     // Allow access to internal com.sun.media.sound for SF2 loading in some JDKs
-    jvmArgs += ['--add-exports=java.desktop/com.sun.media.sound=ALL-UNNAMED']
+    jvmArgs += ['--add-exports=java.desktop/com.sun.media.sound=ALL-UNNAMED', '-Dfile.encoding=UTF-8']
 }
 
 test {
