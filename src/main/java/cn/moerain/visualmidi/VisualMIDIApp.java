@@ -15,7 +15,7 @@ import java.util.ResourceBundle;
 
 public class VisualMIDIApp extends JFrame {
     private static final ResourceBundle msgs = ResourceBundle.getBundle("messages", Locale.getDefault(), new UTF8Control());
-    private enum ViewMode { WAVEFORM, BARS, WMP }
+    private enum ViewMode { WAVEFORM, BARS, WMP, SC88 }
     private final MidiEngine midiEngine;
     private final JComboBox<DeviceOption> deviceCombo;
     private final JButton playBtn;
@@ -65,6 +65,7 @@ public class VisualMIDIApp extends JFrame {
             switch (channelsPanel.getMode()) {
                 case WAVEFORM -> next = ViewMode.BARS;
                 case BARS -> next = ViewMode.WMP;
+                case WMP -> next = ViewMode.SC88;
                 default -> next = ViewMode.WAVEFORM;
             }
             channelsPanel.setMode(next);
@@ -72,11 +73,13 @@ public class VisualMIDIApp extends JFrame {
                 case WAVEFORM -> msgs.getString("mode.waveform");
                 case BARS -> msgs.getString("mode.bars");
                 case WMP -> msgs.getString("mode.wmp");
+                case SC88 -> msgs.getString("mode.sc88");
             }));
             viewToggle.setText(switch (next) {
                 case WAVEFORM -> msgs.getString("mode.waveform");
                 case BARS -> msgs.getString("mode.bars");
                 case WMP -> msgs.getString("mode.wmp");
+                case SC88 -> msgs.getString("mode.sc88");
             });
         });
 
@@ -251,6 +254,7 @@ public class VisualMIDIApp extends JFrame {
                     case WAVEFORM -> new WaveformPanel(visualizer, ch);
                     case BARS -> new BarGraphPanel(visualizer, ch);
                     case WMP -> new WMPSpectrumPanel(visualizer, ch);
+                    case SC88 -> new SC88ProPanel(visualizer, ch);
                 };
                 panels.add(panel);
                 add(panel);

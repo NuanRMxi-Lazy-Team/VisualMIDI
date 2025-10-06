@@ -11,6 +11,8 @@ public class MidiVisualizer {
     public static final int CHANNELS = 16;
 
     private final ChannelState[] channels = new ChannelState[CHANNELS];
+    private final boolean[] mute = new boolean[CHANNELS];
+    private final boolean[] solo = new boolean[CHANNELS];
 
     public MidiVisualizer() {
         for (int i = 0; i < CHANNELS; i++) channels[i] = new ChannelState();
@@ -40,6 +42,15 @@ public class MidiVisualizer {
 
     public ChannelState getChannel(int ch) { return channels[ch]; }
 
+    public synchronized void setMute(int ch, boolean m) { mute[ch] = m; }
+    public synchronized void setSolo(int ch, boolean s) { solo[ch] = s; }
+    public synchronized boolean isMuted(int ch) { return mute[ch]; }
+    public synchronized boolean isSolo(int ch) { return solo[ch]; }
+    public synchronized boolean anySolo() {
+        for (boolean s : solo) if (s) return true;
+        return false;
+    }
+
     public static class ChannelState {
         private static final int BUFFER_SIZE = 2048; // for drawing
         private final float[] buffer = new float[BUFFER_SIZE];
@@ -63,6 +74,8 @@ public class MidiVisualizer {
             this.program = program;
             this.instrumentName = GMInstruments.getName(program);
         }
+
+        public synchronized int getProgram() { return program; }
 
         public synchronized String getInstrumentName() {
             return instrumentName;

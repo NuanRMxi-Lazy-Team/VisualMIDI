@@ -34,11 +34,11 @@ public class Main {
     /** 按优先级返回一个支持中文的字体；都失败则退回默认逻辑字体。 */
     private static Font pickChineseFont() {
         String[] candidates = {
-            "Microsoft YaHei",          // Win
-            "Noto Sans CJK SC",         // Linux/macOS 发行版常见
-            "WenQuanYi Micro Hei",      // 老 Linux
-            "SimSun",                   // Win 宋体
-            "Dialog"                    // Java 自带最后稻草
+            "Microsoft YaHei",
+            "Noto Sans CJK SC",
+            "WenQuanYi Micro Hei",
+            "SimSun",
+            "Dialog"
         };
         for (String name : candidates) {
             Font f = new Font(name, Font.PLAIN, 12);

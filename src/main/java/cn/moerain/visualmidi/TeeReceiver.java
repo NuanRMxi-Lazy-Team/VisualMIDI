@@ -19,14 +19,30 @@ public class TeeReceiver implements Receiver {
     @Override
     public void send(MidiMessage message, long timeStamp) {
         if (closed) return;
-        // forward to visualization
+        // always forward to visualization
         visualizer.onMidi(message, timeStamp);
-        // forward to actual target device
+        // conditionally forward to actual target device (respect mute/solo for channel voice messages)
         Receiver t;
         synchronized (this) { t = target; }
-        if (t != null) {
-            t.send(message, timeStamp);
-        }
+        if (t == null) return;
+        try {
+            if (message instanceof javax.sound.midi.ShortMessage sm) {
+                int cmd = sm.getCommand();
+                int ch = sm.getChannel();
+                boolean channelVoice = (cmd >= 0x80 && cmd <= 0xE0);
+                if (channelVoice) {
+                    boolean anySolo = visualizer.anySolo();
+                    boolean allowed;
+                    synchronized (visualizer) { // use visualizer monitors for consistency
+                        boolean isMuted = visualizer.isMuted(ch);
+                        boolean isSolo = visualizer.isSolo(ch);
+                        allowed = !isMuted && (!anySolo || isSolo);
+                    }
+                    if (!allowed) return; // suppress audio
+                }
+            }
+        } catch (Throwable ignore) {}
+        t.send(message, timeStamp);
     }
 
     @Override
